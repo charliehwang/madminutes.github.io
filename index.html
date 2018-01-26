@@ -1,0 +1,261 @@
+<html>
+
+
+<head>
+	<title>Mad Minutes</title>
+</head>
+
+
+<style>
+.mult {
+	font-size: 150%;
+	/*border: 1px solid pink;*/
+	float: left;
+	width: 3em;
+	height: 3em;
+	padding: 1em;
+	padding-bottom: 2em;
+}
+.symbol {
+    padding-top: 1.9em;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+	color: #737373;
+}
+.leftSide {
+	/*border: 1px solid red;*/
+	float: right;
+	height: 3em;
+	border-bottom: 1px solid #afafaf;
+}
+.rightSide {
+	/*border: 1px solid blue;*/
+	float: right;
+	height: 3em;
+	border-bottom: 1px solid #afafaf;
+}
+
+.top {
+	/*border: 1px solid green;*/
+	padding-bottom: 0.3em;
+}
+.bottom {
+	/*border: 1px solid orange;*/
+}
+
+.inputArea input {
+	font-size: 82%;
+	text-align: right;
+	float: right;
+	width: 3em;
+	height: 2em;
+	border: 2px solid #eaeaea;
+    border-radius: 5px;
+    right: -0.2em;
+    padding-right: 0.2em;
+    position: relative;
+}
+
+.inputArea input:focus {
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 7px #9ecaed;
+}
+
+.product {
+	text-align: right;
+}
+
+.productFirstNum {
+    padding-top: 0.7em;
+}
+
+.productSecNum {
+
+}
+
+.clearer { clear: both; }
+</style>
+
+
+
+<script>
+
+
+document.addEventListener('keydown', function(e) {
+	var leftArrowKey = 37;
+	var rightArrowKey = 39;
+	var upArrowKey = 38;
+	var dnArrowKey = 40;
+	var delKey = 8;
+	var enterKey = 13;
+    console.log('keydown:' + e.keyCode);
+
+    var el = e.target;
+    var id = el.id;
+
+    if (e.keyCode == delKey) {
+    	e.preventDefault();
+    	el.value = "";	
+        return false;
+    }
+
+    if (e.keyCode == enterKey) {
+    	e.preventDefault();
+		focusOnNextInput(id);
+        return false;
+    }
+
+    // if key is an arrow key, don't type the user
+    // input. 
+    if (e.keyCode > 36 && e.keyCode < 41) {
+    	e.preventDefault();
+
+    	if (e.keyCode == rightArrowKey || e.keyCode == upArrowKey)
+    		focusOnNextInput(id);
+    	if (e.keyCode == leftArrowKey || e.keyCode == dnArrowKey)
+    		focusOnPrevInput(id);
+
+        return false;
+    }
+
+
+});
+
+
+
+
+function setup() {
+	// var el = document.getElementById('foo');
+	// el.innerHTML = 'Hello World!';
+
+	var type = "Multiplication";
+	var set = "W";
+
+	var problems = getProblemsForTypeAndSet(type, set);
+
+	outputProblems(type, problems);
+
+}
+
+function focusOnNextInput(id) {
+	var idx = getIdxFromInputID(id);
+	var incremented = parseInt(idx) + 1; 
+
+	var nextEL = document.getElementById("answer_" + incremented);
+	nextEL.focus();
+}
+
+function focusOnPrevInput(id) {
+	var idx = getIdxFromInputID(id);
+	var decremented = parseInt(idx) - 1; 
+
+	var nextEL = document.getElementById("answer_" + decremented);
+	nextEL.focus();
+}
+
+function adjustIDX(idx) {
+	
+}
+
+function getIdxFromInputID(id) {
+	var re = /answer_(\d+)/;
+	var results = id.match(re);
+
+	var idx = results[1];
+	return idx;
+}
+
+
+function outputProblems(type, problems) {
+	var el = document.getElementById('foo');
+
+	problems.forEach( function (prob, i) {
+		var html = htmlForType(type, prob, i);
+
+		el.innerHTML += html;
+	});
+}
+
+
+function htmlForType(type, prob, idx) {
+	var firstNum = prob[0];
+	var secNum = prob[1];
+
+	var html = "";
+	switch(type) {
+	    case 'Multiplication':
+	    	html = "<div class='mult'>\
+	    				<div class='top'>\
+		    				<div class='rightSide'>\
+			    				<div class='product productFirstNum'>"
+			    				+ firstNum + 
+			    				"</div>\
+			    				<div class='product productSecNum'>"
+			    				+ secNum + 
+			    				"</div>\
+			    			</div>\
+		    				<div class='leftSide'>\
+		    					<div class='symbol'>\
+			    					&times;\
+			    				</div>\
+		    				</div>\
+			    			<div class='clearer'></div>\
+		    			</div>\
+	    				<div class='bottom'>\
+		    				<div class='inputArea'>\
+		    					<input type='text' class='answers' id='answer_"
+		    					+ idx +
+		    					"'></input>\
+			    			</div>\
+			    			<div class='clearer'></div>\
+		    			</div>\
+	    			</div>";
+	        break;
+	    case 'Division':
+	        break;
+	    default:
+	}
+
+	return html;
+}
+
+
+function getProblemsForTypeAndSet(type, set) {
+	var problems = data[type][set];
+
+	if (!problems) 
+		console.log("[ERROR] Could not find problems for " + type + " set: " + set);
+
+	return problems;
+}
+
+
+data = {
+	"Multiplication" : {
+			"W" : [ 
+					// [1,15], [2,227], [0,7], [4,6], [9,8], [9,7], [7,7], [5,6], [3,8], [4,2],
+					[1,5], [2,7], [0,7], [4,6], [9,8], [9,7], [7,7], [5,6], [3,8], [4,2],
+					[3,2], [0,6], [5,3], [2,4], [6,4], [3,5], [8,4], [3,7], [7,4], [5,4],
+					[6,2], [8,9], [5,2], [6,7], [2,3], [4,8], [4,5], [3,5], [5,8], [4,4],
+					[8,7], [7,2], [9,6], [6,5], [8,3], [7,6], [5,9], [2,6], [6,2], [3,9],
+				  ],
+	},
+	"Division" : {
+			"K" : [ 
+					[7,63], [5,25], [1,3], [4,16], [9,63], [2,12], [6,54], [1,4], [9,27], [9,45],
+					[9,36], [7,14], [4,8], [9,63], [3,27], [5,10], [5,45], [5,25], [2,10], [9,63],
+					[9,45], [3,9], [9,54], [7,7], [2,8], [5,25], [7,63], [6,12], [9,36], [1,2],
+					[4,16], [2,10], [5,25], [7,63], [1,3], [3,6], [2,18], [3,9], [9,54], [7,14],
+				  ],
+	},
+}
+</script>
+
+
+<body onLoad="setup();">
+	<div id="foo"></div>
+</body>
+
+
+</html>
